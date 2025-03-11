@@ -1,5 +1,6 @@
 class Fish {
-    constructor(origin, size, speed) {
+    constructor(id, origin, size, speed) {
+        this.id = id;
         this.size = size
         // 12 segments, first 10 for body, last 2 for caudal fin
         this.speed = speed;
@@ -35,7 +36,7 @@ class Fish {
     resolve() {
         let headPos = this.spine.joints[0];
 
-        let targetAngle;
+        let targetAngle = this.angle;
 
         this.speedMultiplier = max(1, this.speedMultiplier - 0.01);
 
@@ -43,8 +44,7 @@ class Fish {
 
             targetAngle = atan2(this.foodPos.y - headPos.y, this.foodPos.x - headPos.x);
         } else {
-            this.foodPos = createVector(random(width), random(height));
-            targetAngle = this.angle;
+            this.onFoodEaten();
         }
 
 
@@ -63,6 +63,10 @@ class Fish {
         // Move in target direction
         let targetPos = p5.Vector.add(headPos, targetDir.mult(this.speed * this.speedMultiplier));
         this.spine.resolve(targetPos);
+    }
+
+    onFoodEaten() {
+        this.foodPos = createVector(random(width), random(height));
     }
 
     draw() {
@@ -224,7 +228,7 @@ class Fish {
         fill("black")
         textAlign(CENTER);
         textSize(20);
-        text(`S: ${round(this.size, 2)} \nV: ${round(this.speed * this.speedMultiplier, 2)}\nSP: ${this.spots.length}`, this.getPosX(0, 0, 50), this.getPosY(0, 0, 50));
+        text(`ID: ${this.id}\nS: ${round(this.size, 2)} \nV: ${round(this.speed * this.speedMultiplier, 2)}\nSP: ${this.spots.length}`, this.getPosX(0, 0, 50), this.getPosY(0, 0, 50));
     }
 
     // Various helpers to shorten lines
