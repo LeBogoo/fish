@@ -7,6 +7,7 @@ class Fish {
         // random color
         this.bodyColor = color(random(255), random(255), random(255));
         // lighter body color
+        this.spotColor = color(red(this.bodyColor) - 50, green(this.bodyColor) - 50, blue(this.bodyColor) - 50);
         this.finColor = color(red(this.bodyColor) + 50, green(this.bodyColor) + 50, blue(this.bodyColor) + 50);
         this.bodyWidth = [16, 20, 21, 21, 19, 16, 13, 10, 8, 5].map(e => e * this.size);
 
@@ -14,6 +15,18 @@ class Fish {
         this.lerpSpeed = 0.025;
         this.speedMultiplier = 1;
         this.randomOffset = random(1000);
+
+        this.spots = new Array(10).fill().map((_, i) => {
+            if (random() > 0.25) {
+                return null;
+            }
+
+            return {
+                segment: i,
+                angle: random(-PI, PI),
+                size: random(20, 50)
+            }
+        }).filter(e => e !== null);
 
 
         this.foodPos = createVector(random(width), random(height));
@@ -123,10 +136,10 @@ class Fish {
     }
 
     drawBody() {
-        fill(this.bodyColor);
+        push();
 
+        beginClip();
         beginShape();
-
         // Right half of the fish
         for (let i = 2; i < 10; i++) {
             curveVertex(this.getPosX(i, PI / 2, 0), this.getPosY(i, PI / 2, 0));
@@ -151,6 +164,25 @@ class Fish {
         curveVertex(this.getPosX(2, PI / 2, 0), this.getPosY(2, PI / 2, 0));
 
         endShape(CLOSE);
+        endClip();
+
+        // Draw base body color
+        fill(this.bodyColor);
+        rect(0, 0, width, height);
+
+        fill(this.spotColor);
+        strokeWeight(0);
+
+        for (let spot of this.spots) {
+            push();
+            translate(this.getPosX(spot.segment, spot.angle, 0), this.getPosY(spot.segment, spot.angle, 0));
+            ellipse(0, 0, spot.size * this.size, spot.size * this.size);
+            pop()
+        }
+
+
+
+        pop();
     }
 
     drawDorsalFin(spineJoints, spineAngles, headToMid1, headToMid2) {
@@ -191,7 +223,7 @@ class Fish {
         fill("black")
         textAlign(CENTER);
         textSize(20);
-        text(`SC: ${round(this.size, 2)} \nSP: ${round(this.speed * this.speedMultiplier, 2)}`, this.getPosX(0, 0, 50), this.getPosY(0, 0, 50));
+        text(`S: ${round(this.size, 2)} \nV: ${round(this.speed * this.speedMultiplier, 2)}\nSP: ${this.spots.length}`, this.getPosX(0, 0, 50), this.getPosY(0, 0, 50));
     }
 
     // Various helpers to shorten lines
