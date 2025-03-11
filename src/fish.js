@@ -82,6 +82,7 @@ class Fish {
         this.drawVentralFins(spineAngles);
         this.drawCaudalFins(headToTail, spineJoints, spineAngles);
         this.drawBody();
+        this.drawSpots();
         this.drawDorsalFin(spineJoints, spineAngles, headToMid1, headToMid2);
         this.drawEyes();
     }
@@ -136,9 +137,6 @@ class Fish {
     }
 
     drawBody() {
-        push();
-
-        beginClip();
         beginShape();
         // Right half of the fish
         for (let i = 2; i < 10; i++) {
@@ -164,10 +162,16 @@ class Fish {
         curveVertex(this.getPosX(2, PI / 2, 0), this.getPosY(2, PI / 2, 0));
 
         endShape(CLOSE);
+
+        fill(this.bodyColor);
+    }
+
+    drawSpots() {
+        push();
+        beginClip();
+        this.drawBody()
         endClip();
 
-        // Draw base body color
-        fill(this.bodyColor);
         rect(0, 0, width, height);
 
         fill(this.spotColor);
@@ -179,9 +183,6 @@ class Fish {
             ellipse(0, 0, spot.size * this.size, spot.size * this.size);
             pop()
         }
-
-
-
         pop();
     }
 
