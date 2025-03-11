@@ -8,8 +8,7 @@ class Fish {
         // random color
         this.bodyColor = color(random(255), random(255), random(255));
         // lighter body color
-        this.spotColor = color(red(this.bodyColor) - 50, green(this.bodyColor) - 50, blue(this.bodyColor) - 50);
-        this.finColor = color(red(this.bodyColor) + 50, green(this.bodyColor) + 50, blue(this.bodyColor) + 50);
+        this.recalculateColors();
         this.bodyWidth = [16, 20, 21, 21, 19, 16, 13, 10, 8, 5].map(e => e * this.size);
 
         this.angle = 0;
@@ -31,6 +30,11 @@ class Fish {
 
 
         this.foodPos = createVector(random(width), random(height));
+    }
+
+    recalculateColors() {
+        this.spotColor = color(red(this.bodyColor) - 50, green(this.bodyColor) - 50, blue(this.bodyColor) - 50);
+        this.finColor = color(red(this.bodyColor) + 50, green(this.bodyColor) + 50, blue(this.bodyColor) + 50);
     }
 
     resolve() {
