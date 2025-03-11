@@ -6,24 +6,32 @@ class Fish {
         this.bodyColor = color(58, 124, 165);
         this.finColor = color(129, 195, 215);
         this.bodyWidth = [16, 20, 21, 21, 19, 16, 13, 10, 8, 5];
+
+        this.angle = -10;
+
     }
 
     resolve() {
 
         let headPos = this.spine.joints[0];
+        let forward = p5.Vector.sub(this.spine.joints[1], headPos).normalize();
 
-        this.target = p5.Vector.add(headPos, createVector(sin(frameCount / (this.speed * 3)), cos(frameCount / (this.speed * 3))).mult(100));
+        this.angle += 0.05 + sin(frameCount / 10) * 0.05;
 
-        let targetPos = p5.Vector.add(headPos, p5.Vector.sub(this.target, headPos).setMag(this.speed));
+        // Calculate target direction with smooth turning
+        let currentAngle = forward.heading() - PI / 2;
+        let targetAngle = currentAngle + this.angle;
+
+        this.targetDir = createVector(sin(targetAngle), cos(targetAngle));
+
+        // Move in target direction
+        let targetPos = p5.Vector.add(headPos, this.targetDir.mult(this.speed));
         this.spine.resolve(targetPos);
     }
 
     draw() {
         strokeWeight(4);
         stroke(255);
-
-        ellipse(this.target.x, this.target.y, 10, 10);
-
         fill(this.finColor);
 
         let spineJoints = this.spine.joints;

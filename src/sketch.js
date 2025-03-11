@@ -10,9 +10,4 @@ function draw() {
 
     chain.resolve();
     chain.draw();
-    chain.debugDraw(10);
-
-    // if (frameCount == 50) {
-    //     noLoop();
-    // }
 }
