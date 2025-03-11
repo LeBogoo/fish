@@ -1,5 +1,5 @@
 let fish;
-let fishCount = 3;
+let fishCount = 10;
 
 function setup() {
     createCanvas(windowWidth, windowHeight);

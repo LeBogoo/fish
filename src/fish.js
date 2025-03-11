@@ -12,8 +12,16 @@ class Fish {
 
         this.angle = 0;
         this.lerpSpeed = 0.025;
+        this.speedMultiplier = 1;
+        this.randomOffset = random(1000);
+
 
         this.foodPos = createVector(random(width), random(height));
+
+        document.body.addEventListener('mousedown', (e) => {
+            this.foodPos = createVector(e.clientX, e.clientY);
+            this.speedMultiplier = 2;
+        });
     }
 
     resolve() {
@@ -21,14 +29,17 @@ class Fish {
 
         let targetAngle;
 
-        if (this.foodPos.dist(headPos) > (200 * this.size)) {
+        this.speedMultiplier = max(1, this.speedMultiplier - 0.01);
+
+        if (this.foodPos.dist(headPos) > (100 * this.size)) {
 
             targetAngle = atan2(this.foodPos.y - headPos.y, this.foodPos.x - headPos.x);
         } else {
             this.foodPos = createVector(random(width), random(height));
-
+            this.speedMultiplier = 1.2;
             targetAngle = this.angle;
         }
+
 
         // Normalize the angle difference
         let angleDiff = targetAngle - this.angle;
@@ -37,10 +48,13 @@ class Fish {
 
         this.angle += angleDiff * this.lerpSpeed;
 
+        this.angle += sin((frameCount + this.randomOffset) / 20) * 0.025;
+
+
         this.targetDir = createVector(cos(this.angle), sin(this.angle));
 
         // Move in target direction
-        let targetPos = p5.Vector.add(headPos, this.targetDir.mult(this.speed));
+        let targetPos = p5.Vector.add(headPos, this.targetDir.mult(this.speed * this.speedMultiplier));
         this.spine.resolve(targetPos);
     }
 
