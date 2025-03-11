@@ -1,6 +1,8 @@
 let fish;
 let fishCount = 10;
 
+let isPressed = false;
+
 function setup() {
     createCanvas(windowWidth, windowHeight);
 
@@ -15,9 +17,21 @@ function draw() {
     background(40, 44, 52);
 
     fish.forEach(f => {
+        if (isPressed) {
+            f.foodPos = createVector(mouseX, mouseY);
+            f.speedMultiplier = 2;
+        }
         f.resolve();
         f.draw();
     });
+}
+
+function mousePressed() {
+    isPressed = true;
+}
+
+function mouseReleased() {
+    isPressed = false;
 }
 
 function windowResized() {

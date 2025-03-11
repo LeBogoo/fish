@@ -17,11 +17,6 @@ class Fish {
 
 
         this.foodPos = createVector(random(width), random(height));
-
-        document.body.addEventListener('mousedown', (e) => {
-            this.foodPos = createVector(e.clientX, e.clientY);
-            this.speedMultiplier = 2;
-        });
     }
 
     resolve() {
