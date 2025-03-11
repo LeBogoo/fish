@@ -45,20 +45,16 @@ class Fish {
         this.angle += sin((frameCount + this.randomOffset) / 20) * 0.025;
 
 
-        this.targetDir = createVector(cos(this.angle), sin(this.angle));
+        let targetDir = createVector(cos(this.angle), sin(this.angle));
 
         // Move in target direction
-        let targetPos = p5.Vector.add(headPos, this.targetDir.mult(this.speed * this.speedMultiplier));
+        let targetPos = p5.Vector.add(headPos, targetDir.mult(this.speed * this.speedMultiplier));
         this.spine.resolve(targetPos);
     }
 
     draw() {
         strokeWeight(2);
         stroke(255);
-
-        // fill(this.bodyColor)
-        // ellipse(this.foodPos.x, this.foodPos.y, 10, 10);
-
 
         let spineJoints = this.spine.joints;
         let spineAngles = this.spine.angles;
@@ -186,8 +182,16 @@ class Fish {
         ellipse(this.getPosX(0, -PI / 2, -2), this.getPosY(0, -PI / 2, -2), 8 * this.size, 8 * this.size);
     }
 
-    debugDraw(size) {
-        this.spine.draw(size);
+    debugDraw() {
+        this.spine.draw(this.size * 8);
+        fill(this.bodyColor)
+
+        ellipse(this.foodPos.x, this.foodPos.y, 10, 10);
+
+        fill("black")
+        textAlign(CENTER);
+        textSize(20);
+        text(`SC: ${round(this.size, 2)} \nSP: ${round(this.speed * this.speedMultiplier, 2)}`, this.getPosX(0, 0, 50), this.getPosY(0, 0, 50));
     }
 
     // Various helpers to shorten lines
