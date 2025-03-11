@@ -42,7 +42,7 @@ function setup() {
 }
 
 function draw() {
-    background(40, 44, 52);
+    clear();
 
     fish.forEach((f) => {
         if (isPressed && !f.isDying) {
