@@ -1,25 +1,32 @@
 class Fish {
-    constructor(origin, speed) {
+    constructor(origin, size, speed) {
+        this.size = size
         // 12 segments, first 10 for body, last 2 for caudal fin
         this.speed = speed;
-        this.spine = new Chain(origin, 12, 16, PI / 8);
-        this.bodyColor = color(58, 124, 165);
-        this.finColor = color(129, 195, 215);
-        this.bodyWidth = [16, 20, 21, 21, 19, 16, 13, 10, 8, 5];
+        this.spine = new Chain(origin, 12, 16 * this.size, PI / 8);
+        // random color
+        this.bodyColor = color(random(255), random(255), random(255));
+        // lighter body color
+        this.finColor = color(red(this.bodyColor) + 50, green(this.bodyColor) + 50, blue(this.bodyColor) + 50);
+        this.bodyWidth = [16, 20, 21, 21, 19, 16, 13, 10, 8, 5].map(e => e * this.size);
 
         this.angle = 0;
         this.lerpSpeed = 0.025;
+
+        this.foodPos = createVector(random(width), random(height));
     }
 
     resolve() {
         let headPos = this.spine.joints[0];
-        let mousePos = createVector(mouseX, mouseY);
 
         let targetAngle;
 
-        if (mousePos.dist(headPos) > 100) {
-            targetAngle = atan2(mousePos.y - headPos.y, mousePos.x - headPos.x);
+        if (this.foodPos.dist(headPos) > (200 * this.size)) {
+
+            targetAngle = atan2(this.foodPos.y - headPos.y, this.foodPos.x - headPos.x);
         } else {
+            this.foodPos = createVector(random(width), random(height));
+
             targetAngle = this.angle;
         }
 
@@ -38,22 +45,11 @@ class Fish {
     }
 
     draw() {
-        strokeWeight(4);
+        strokeWeight(2);
         stroke(255);
-        fill(this.finColor);
 
-        // line from head to mouse
-        let headPos = this.spine.joints[0];
-        let mouse = createVector(width / 2, height / 2);
-        line(headPos.x, headPos.y, mouse.x, mouse.y);
-
-        // now draw the angle of that line towards the mouse pos
-        let lineAngle = atan2(mouse.y - headPos.y, mouse.x - headPos.x);
-        // this.angle = lineAngle - PI;
-
-        // bigger text
-        textSize(32);
-        text("Angle: " + Math.round(lineAngle * 100) / 100, 10, 50);
+        // fill(this.bodyColor)
+        // ellipse(this.foodPos.x, this.foodPos.y, 10, 10);
 
 
         let spineJoints = this.spine.joints;
@@ -74,15 +70,16 @@ class Fish {
     }
 
     drawPectoralFins(spineAngles) {
+        fill(this.finColor);
         push();
         translate(this.getPosX(3, PI / 3, 0), this.getPosY(3, PI / 3, 0));
         rotate(spineAngles[2] - PI / 4);
-        ellipse(0, 0, 50, 20); // Right
+        ellipse(0, 0, 50 * this.size, 20 * this.size); // Right
         pop();
         push();
         translate(this.getPosX(3, -PI / 3, 0), this.getPosY(3, -PI / 3, 0));
         rotate(spineAngles[2] + PI / 4);
-        ellipse(0, 0, 50, 20); // Left
+        ellipse(0, 0, 50 * this.size, 20 * this.size); // Left
         pop();
     }
 
@@ -90,12 +87,12 @@ class Fish {
         push();
         translate(this.getPosX(7, PI / 2, 0), this.getPosY(7, PI / 2, 0));
         rotate(spineAngles[6] - PI / 4);
-        ellipse(0, 0, 30, 10); // Right
+        ellipse(0, 0, 30 * this.size, 10 * this.size); // Right
         pop();
         push();
         translate(this.getPosX(7, -PI / 2, 0), this.getPosY(7, -PI / 2, 0));
         rotate(spineAngles[6] + PI / 4);
-        ellipse(0, 0, 30, 10); // Left
+        ellipse(0, 0, 30 * this.size, 10 * this.size); // Left
         pop();
     }
 
@@ -177,8 +174,8 @@ class Fish {
 
     drawEyes() {
         fill(255);
-        ellipse(this.getPosX(0, PI / 2, -2), this.getPosY(0, PI / 2, -2), 8, 8);
-        ellipse(this.getPosX(0, -PI / 2, -2), this.getPosY(0, -PI / 2, -2), 8, 8);
+        ellipse(this.getPosX(0, PI / 2, -2), this.getPosY(0, PI / 2, -2), 8 * this.size, 8 * this.size);
+        ellipse(this.getPosX(0, -PI / 2, -2), this.getPosY(0, -PI / 2, -2), 8 * this.size, 8 * this.size);
     }
 
     debugDraw(size) {
