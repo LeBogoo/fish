@@ -45,7 +45,7 @@ function draw() {
     background(40, 44, 52);
 
     fish.forEach((f) => {
-        if (isPressed) {
+        if (isPressed && !f.isDying) {
             f.foodPos = createVector(mouseX, mouseY);
             f.speedMultiplier = 2;
         }
@@ -79,6 +79,7 @@ function swapFish() {
 
     // get first fish
     let f = fish[0];
+    f.isDying = true;
     f.foodPos = pos;
     f.onFoodEaten = () => {
         console.log("removed fish", f.id);

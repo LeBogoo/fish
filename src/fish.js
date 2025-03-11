@@ -2,6 +2,7 @@ class Fish {
     constructor(id, origin, size, speed) {
         this.id = id;
         this.size = size
+        this.isDying = false;
         // 12 segments, first 10 for body, last 2 for caudal fin
         this.speed = speed;
         this.spine = new Chain(origin, 12, 16 * this.size, PI / 8);
