@@ -19,3 +19,7 @@ function draw() {
         f.draw();
     });
 }
+
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+}
