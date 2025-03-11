@@ -31,7 +31,6 @@ class Fish {
             targetAngle = atan2(this.foodPos.y - headPos.y, this.foodPos.x - headPos.x);
         } else {
             this.foodPos = createVector(random(width), random(height));
-            this.speedMultiplier = 1.2;
             targetAngle = this.angle;
         }
 
