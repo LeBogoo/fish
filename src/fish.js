@@ -7,22 +7,30 @@ class Fish {
         this.finColor = color(129, 195, 215);
         this.bodyWidth = [16, 20, 21, 21, 19, 16, 13, 10, 8, 5];
 
-        this.angle = -10;
-
+        this.angle = 0;
+        this.lerpSpeed = 0.025;
     }
 
     resolve() {
-
         let headPos = this.spine.joints[0];
-        let forward = p5.Vector.sub(this.spine.joints[1], headPos).normalize();
+        let mousePos = createVector(mouseX, mouseY);
 
-        this.angle += 0.05 + sin(frameCount / 10) * 0.05;
+        let targetAngle;
 
-        // Calculate target direction with smooth turning
-        let currentAngle = forward.heading() - PI / 2;
-        let targetAngle = currentAngle + this.angle;
+        if (mousePos.dist(headPos) > 100) {
+            targetAngle = atan2(mousePos.y - headPos.y, mousePos.x - headPos.x);
+        } else {
+            targetAngle = this.angle;
+        }
 
-        this.targetDir = createVector(sin(targetAngle), cos(targetAngle));
+        // Normalize the angle difference
+        let angleDiff = targetAngle - this.angle;
+        while (angleDiff > PI) angleDiff -= TWO_PI;
+        while (angleDiff < -PI) angleDiff += TWO_PI;
+
+        this.angle += angleDiff * this.lerpSpeed;
+
+        this.targetDir = createVector(cos(this.angle), sin(this.angle));
 
         // Move in target direction
         let targetPos = p5.Vector.add(headPos, this.targetDir.mult(this.speed));
@@ -33,6 +41,20 @@ class Fish {
         strokeWeight(4);
         stroke(255);
         fill(this.finColor);
+
+        // line from head to mouse
+        let headPos = this.spine.joints[0];
+        let mouse = createVector(width / 2, height / 2);
+        line(headPos.x, headPos.y, mouse.x, mouse.y);
+
+        // now draw the angle of that line towards the mouse pos
+        let lineAngle = atan2(mouse.y - headPos.y, mouse.x - headPos.x);
+        // this.angle = lineAngle - PI;
+
+        // bigger text
+        textSize(32);
+        text("Angle: " + Math.round(lineAngle * 100) / 100, 10, 50);
+
 
         let spineJoints = this.spine.joints;
         let spineAngles = this.spine.angles;
@@ -62,7 +84,6 @@ class Fish {
         rotate(spineAngles[2] + PI / 4);
         ellipse(0, 0, 50, 20); // Left
         pop();
-
     }
 
     drawVentralFins(spineAngles) {
@@ -83,13 +104,19 @@ class Fish {
         // "Bottom" of the fish
         for (let i = 8; i < 12; i++) {
             let tailWidth = 1.5 * headToTail * (i - 8) * (i - 8);
-            curveVertex(spineJoints[i].x + cos(spineAngles[i] - PI / 2) * tailWidth, spineJoints[i].y + sin(spineAngles[i] - PI / 2) * tailWidth);
+            curveVertex(
+                spineJoints[i].x + cos(spineAngles[i] - PI / 2) * tailWidth,
+                spineJoints[i].y + sin(spineAngles[i] - PI / 2) * tailWidth
+            );
         }
 
         // "Top" of the fish
         for (let i = 11; i >= 8; i--) {
             let tailWidth = headToTail * 0.2;
-            curveVertex(spineJoints[i].x + cos(spineAngles[i] + PI / 2) * tailWidth, spineJoints[i].y + sin(spineAngles[i] + PI / 2) * tailWidth);
+            curveVertex(
+                spineJoints[i].x + cos(spineAngles[i] + PI / 2) * tailWidth,
+                spineJoints[i].y + sin(spineAngles[i] + PI / 2) * tailWidth
+            );
         }
         endShape(CLOSE);
     }
@@ -129,8 +156,22 @@ class Fish {
         fill(this.finColor);
         beginShape();
         vertex(spineJoints[4].x, spineJoints[4].y);
-        bezierVertex(spineJoints[5].x, spineJoints[5].y, spineJoints[6].x, spineJoints[6].y, spineJoints[7].x, spineJoints[7].y);
-        bezierVertex(spineJoints[6].x + cos(spineAngles[6] + PI / 2) * headToMid2 * 16, spineJoints[6].y + sin(spineAngles[6] + PI / 2) * headToMid2 * 16, spineJoints[5].x + cos(spineAngles[5] + PI / 2) * headToMid1 * 16, spineJoints[5].y + sin(spineAngles[5] + PI / 2) * headToMid1 * 16, spineJoints[4].x, spineJoints[4].y);
+        bezierVertex(
+            spineJoints[5].x,
+            spineJoints[5].y,
+            spineJoints[6].x,
+            spineJoints[6].y,
+            spineJoints[7].x,
+            spineJoints[7].y
+        );
+        bezierVertex(
+            spineJoints[6].x + cos(spineAngles[6] + PI / 2) * headToMid2 * 16,
+            spineJoints[6].y + sin(spineAngles[6] + PI / 2) * headToMid2 * 16,
+            spineJoints[5].x + cos(spineAngles[5] + PI / 2) * headToMid1 * 16,
+            spineJoints[5].y + sin(spineAngles[5] + PI / 2) * headToMid1 * 16,
+            spineJoints[4].x,
+            spineJoints[4].y
+        );
         endShape();
     }
 
@@ -147,10 +188,18 @@ class Fish {
     // Various helpers to shorten lines
 
     getPosX(i, angleOffset, lengthOffset) {
-        return this.spine.joints[i].x + cos(this.spine.angles[i] + angleOffset) * (this.bodyWidth[i] + lengthOffset);
+        return (
+            this.spine.joints[i].x +
+            cos(this.spine.angles[i] + angleOffset) *
+            (this.bodyWidth[i] + lengthOffset)
+        );
     }
 
     getPosY(i, angleOffset, lengthOffset) {
-        return this.spine.joints[i].y + sin(this.spine.angles[i] + angleOffset) * (this.bodyWidth[i] + lengthOffset);
+        return (
+            this.spine.joints[i].y +
+            sin(this.spine.angles[i] + angleOffset) *
+            (this.bodyWidth[i] + lengthOffset)
+        );
     }
 }
